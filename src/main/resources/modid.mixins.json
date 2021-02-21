@@ -6,7 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "ExampleMixin"
+	  "net.fabricmc.com.hanibal.mod1.mixin.ExampleMixin"
   ],
   "injectors": {
     "defaultRequire": 1
