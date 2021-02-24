@@ -1,5 +1,7 @@
 {
-  "variants": {
-    "": { "model": "mod1:block/angelic_brick" }
-  }
+	"variants": {
+		"": {
+			"model": "mod1:block/angelic_brick"
+		}
+	}
 }

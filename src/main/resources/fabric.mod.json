@@ -1,33 +1,33 @@
 {
-  "schemaVersion": 1,
-  "name": "${mod_name}",
-  "id": "${mod_id}",
-  "version": "${version}",
-  "icon": "assets/${mod_id}/textures/logo.png",
-  "authors": [
-    "Empereur Hanibal"
-  ],
-  "contact": {
-    "sources": "https://github.com/Empereur-Hanibal/${github_name}",
-    "issues": "https://github.com/Empereur-Hanibal/${github_name}/issues"
-  },
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "com.hanibal.mod1.Mod1"
-    ]
-  },
-  "depends": {
-    "minecraft": "*",
-    "fabric": "*"
-  },
-  "custom": {
-    "modmenu": {
-      "links": {
-        "modmenu.github_releases": "https://github.com/Empereur-Hanibal/${github_name}/releases/",
-        "modmenu.wiki": "https://github.com/Empereur-Hanibal/${github_name}/wiki/"
-      }
-    }
-  },
-  "license": "MIT"
+	"schemaVersion": 1,
+	"name": "${mod_name}",
+	"id": "${mod_id}",
+	"version": "${version}",
+	"icon": "assets/${mod_id}/textures/logo.png",
+	"authors": [
+		"Empereur Hanibal"
+	],
+	"contact": {
+		"sources": "https://github.com/Empereur-Hanibal/${github_name}",
+		"issues": "https://github.com/Empereur-Hanibal/${github_name}/issues"
+	},
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.hanibal.mod1.Mod1"
+		]
+	},
+	"depends": {
+		"minecraft": "*",
+		"fabric": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.github_releases": "https://github.com/Empereur-Hanibal/${github_name}/releases/",
+				"modmenu.wiki": "https://github.com/Empereur-Hanibal/${github_name}/wiki/"
+			}
+		}
+	},
+	"license": "MIT"
 }

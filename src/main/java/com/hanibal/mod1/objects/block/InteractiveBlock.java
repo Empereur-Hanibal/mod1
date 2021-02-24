@@ -15,6 +15,7 @@ public class InteractiveBlock extends Block {
 
 	/**
 	 * Le corps du bloc se trouve ici, de base c'est le début de la classe, sauf que la classe Block définit également d'autres méthodes supplémentaires que l'on pourra override (= écrire par dessus)
+	 *
 	 * @param settings Variable qui définit certaines propriétés du bloc comme le matériau, la résistance aux explosions, etc...
 	 */
 	public InteractiveBlock(Settings settings) {
