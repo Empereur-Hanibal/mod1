@@ -1,69 +1,20 @@
-import net.dumbcode.gradlehook.GradleWebhookPlugin
-import net.fabricmc.loom.LoomGradlePlugin
-import org.ajoberstar.grgit.gradle.GrgitPlugin
-
-buildscript {
-    repositories {
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        maven {
-            name = 'TerraformersMC'
-            url = 'http://maven.terraformersmc.com/'
-        }
-        gradlePluginPortal()
-        mavenLocal()
-    }
-
-    dependencies {
-        classpath "net.fabricmc:fabric-loom:0.5-SNAPSHOT"
-        classpath "net.dumbcode.gradlehook:GradleHook:1.3.1"
-        classpath "org.kohsuke:github-api:1.114"
-        classpath "org.ajoberstar.grgit:grgit-gradle:4.1.0"
-    }
-}
-
 plugins {
-    id 'fabric-loom' version '0.5-SNAPSHOT' apply false
+    id 'fabric-loom' version '0.5-SNAPSHOT'
     id 'maven-publish'
 }
-
-repositories {
-    mavenLocal()
-    maven { url 'https://jitpack.io' }
-    maven { url 'http://maven.terraformersmc.com/' }
-}
-
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: GradleWebhookPlugin
-apply plugin: GrgitPlugin
-apply plugin: LoomGradlePlugin
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.mod_id
-group = "com.github.DawnTeam"
-
-version = getVersion()
-
-ext.curseReleaseType = "release"
-ext.releaseChangelog = "No changelog available"
-ext.stabilitySuffix = ""
-ext.curseforgeDownloadLink = null
-ext.modrinthDownloadLink = null
-ext.githubDownloadLink = null
-ext.releaseType = project.mod_default_release_type
+group = "com.github.EmpereurHanibal"
+version = project.mod_version
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-
-    modApi "com.github.DawnTeamMC:DawnAPI:v${dawn_version}"
 
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 }
@@ -112,135 +63,4 @@ publishing {
             }
         }
     }
-}
-
-task generateChangelog {
-    def changes = StringBuilder.getDeclaredConstructor().newInstance()
-    if (!project.hasProperty("lastTag") || !project.hasProperty("currentTag")) {
-        println "Missing lastTag or currentTag parameters, aborting changelog creation"
-        return
-    }
-    def lastTag = project.getProperty("lastTag")
-    def currentTag = project.getProperty("currentTag")
-    def commits = "git log --max-count=$project.changelog_max_commit_search --pretty=format:\"%b\" $lastTag..$currentTag".execute()
-    println "Last version: $lastTag"
-    println "Current version: $currentTag"
-
-    if (currentTag.contains("-alpha")) {
-        releaseType = "alpha"
-        curseReleaseType = "alpha"
-        stabilitySuffix = " (Alpha)"
-    } else if (currentTag.contains("-beta")) {
-        releaseType = "beta"
-        curseReleaseType = "beta"
-        stabilitySuffix = " (Beta)"
-    } else if (currentTag.contains("-pre")) {
-        releaseType = "pre"
-        curseReleaseType = "beta"
-        stabilitySuffix = " (Pre-Release)"
-    } else if (currentTag.contains("-rc")) {
-        releaseType = "rc"
-        curseReleaseType = "beta"
-        stabilitySuffix = " (Release Candidate)"
-    } else if (!currentTag.contains("-")) {
-        releaseType = "stable"
-    }
-    println "Release type: $releaseType"
-
-    commits.in.eachLine { line ->
-        def processedLine = line.toString()
-        if (processedLine.startsWith("\"")) {
-            processedLine = processedLine.substring(1)
-        }
-        if (processedLine.endsWith("\"")) {
-            processedLine = processedLine.substring(0, processedLine.length() - 1)
-        }
-        println "Reading line: $processedLine"
-
-        if (processedLine.startsWith("- ")) {
-            println "Adding changelog line:"
-            println "  $processedLine"
-            if (changes.length() == 0) {
-                changes << processedLine
-            } else {
-                changes << "\n$processedLine"
-            }
-        }
-    }
-    commits.err.eachLine { line -> println line }
-    commits.waitFor()
-    println "Changelog:"
-    releaseChangelog = changes.toString()
-    if (releaseChangelog.isEmpty()) {
-        releaseChangelog = "No changelog available"
-    }
-    println releaseChangelog
-}
-
-task github {
-    if (!System.getenv().GITHUB_TOKEN) {
-        println "No GITHUB_TOKEN specified"
-    }
-
-    doLast {
-        def github = org.kohsuke.github.GitHub.connectUsingOAuth(System.getenv().GITHUB_TOKEN as String)
-        def repository = github.getRepository(System.getenv().GITHUB_REPOSITORY)
-
-        def releaseBuilder = new org.kohsuke.github.GHReleaseBuilder(repository, project.getProperty("currentTag"))
-        releaseBuilder.name("$project.mod_name v$version")
-        releaseBuilder.body(releaseChangelog)
-        releaseBuilder.commitish(getBranch())
-        if (releaseType != "stable") {
-            releaseBuilder.prerelease(true)
-        }
-
-        def ghRelease = releaseBuilder.create()
-        ghRelease.uploadAsset(file("${project.buildDir}/libs/${project.mod_id}-${version}.jar"), "application/java-archive")
-        githubDownloadLink = ghRelease.getHtmlUrl()
-    }
-}
-
-String getVersion() {
-    def version = "unknown"
-    if (project.hasProperty("currentTag")) {
-        return project.currentTag.replace("v", "")
-    }
-    def branchLines = "git branch --show-current".execute().in.readLines()
-    if (!branchLines.isEmpty()) {
-        version = branchLines.get(0)
-    }
-
-    def tagLines = "git describe --tags --exact-match --abbrev=0".execute().in.readLines()
-    def release = false
-    if (!tagLines.isEmpty()) {
-        def line = tagLines.get(0)
-        def regex = /v([0-9].[0-9].[0-9])/
-        if (line.matches(regex)) {
-            version = (line =~ regex)[0][1]
-            release = true
-        }
-    }
-    if (!release) {
-        def lastTag = "git describe --tags --abbrev=0".execute().in.readLines()
-        def lastCommit = "git rev-parse --short HEAD".execute().in.readLines()
-        if (!lastTag.isEmpty() && !lastCommit.isEmpty()) {
-            version = lastTag.get(0) + "+" + version + "." + lastCommit.get(0)
-        }
-    }
-    return version
-}
-
-String getBranch() {
-    def ENV = System.getenv()
-    if (ENV.GITHUB_REF) {
-        def branch = ENV.GITHUB_REF
-        return branch.substring(branch.lastIndexOf("/") + 1)
-    }
-
-    if (grgit == null) {
-        return "unknown"
-    }
-
-    def branch = grgit.branch.current().name
-    return branch.substring(branch.lastIndexOf("/") + 1)
 }

@@ -19,8 +19,7 @@
   },
   "depends": {
     "minecraft": "*",
-    "fabric": "*",
-    "dawn": "*"
+    "fabric": "*"
   },
   "custom": {
     "modmenu": {
