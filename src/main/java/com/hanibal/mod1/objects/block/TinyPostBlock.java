@@ -8,7 +8,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
-public class TinyPostBlock extends Block {
+public class angelic_brick.jsonTinyPostBlock extends Block {
 	public TinyPostBlock(Settings settings) {
 		super(settings);
 	}

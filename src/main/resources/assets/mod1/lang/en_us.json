@@ -1,4 +1,7 @@
 {
 	"block.mod1.angelic_brick": "Angelic Brick",
-	"block.mod1.angelic_brick_post": "Angelic Brick Post"
+	"block.mod1.angelic_brick_post": "Angelic Brick Post",
+	"block.mod1.angelic_stone": "Angelic Stone",
+	"block.mod1.angelic_brick_stair": "Angelic Brick Stair"
+
 }
